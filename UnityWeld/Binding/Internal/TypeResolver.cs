@@ -6,6 +6,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityWeld.Binding.Exceptions;
 using UnityWeld.Ioc;
+using WeldUI.Common;
 
 namespace UnityWeld.Binding.Internal
 {
@@ -29,6 +30,18 @@ namespace UnityWeld.Binding.Internal
                 if (typesWithBindingAttribute == null)
                 {
                     typesWithBindingAttribute = FindTypesMarkedByAttribute(typeof(BindingAttribute));
+                }
+
+                return typesWithBindingAttribute;
+            }
+        }
+
+
+                public static IEnumerable<object> TypesWithMessageAttribute {  get
+            {
+                if (typesWithBindingAttribute == null)
+                {
+                    typesWithBindingAttribute = FindTypesMarkedByAttribute(typeof(MessageAttribute));
                 }
 
                 return typesWithBindingAttribute;
@@ -299,6 +312,20 @@ namespace UnityWeld.Binding.Internal
                     && !m.MemberName.StartsWith("get_")) // Exclude property getters, since we aren't doing anything with the return value of the bound method anyway.
                 .ToArray();
         }
+
+        public static BindableMember<MethodInfo>[] FindBindableMethods(MessagesDispatcher targetScript, Type targetType)
+        {
+            return FindAvailableViewModelTypes(targetScript)
+                .SelectMany(type => GetPublicMethods(type)
+                    .Select(m => new BindableMember<MethodInfo>(m, type))
+                )
+                .Where(m => m.Member.GetParameters().Length == 1)
+                .Where(m => m.Member.GetParameters()[0].ParameterType.Equals(targetType))
+                .Where(m => m.Member.GetCustomAttributes(typeof(BindingAttribute), false).Any() 
+                    && !m.MemberName.StartsWith("get_")) // Exclude property getters, since we aren't doing anything with the return value of the bound method anyway.
+                .ToArray();
+        }
+
 
         /// <summary>
         /// Find collection properties that can be data-bound.
