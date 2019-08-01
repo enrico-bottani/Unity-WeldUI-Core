@@ -1,9 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
-namespace WeldUI.Common
+namespace UnityWeld.Messaging
 {
     [AttributeUsage(AttributeTargets.Class,
     Inherited = false)]

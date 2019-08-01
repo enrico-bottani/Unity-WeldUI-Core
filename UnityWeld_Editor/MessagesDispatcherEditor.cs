@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEngine;
 
 using UnityWeld.Binding.Internal;
+using UnityWeld.Messaging.Dispatcher;
 using UnityWeld_Editor;
 
 [CustomEditor(typeof(MessagesDispatcher))]
@@ -35,9 +36,9 @@ public class MessagesDispatcherEditor : BaseBindingEditor
             }
         }
 
-        targetScript.SelectedIndex = Array.IndexOf(
+        targetScript.UnityEditorSelectedMessageTypeIndex = Array.IndexOf(
             availableMessages,
-            targetScript.SelectedMessage
+            targetScript.UnityEditorSelectedMessageName
         );
 
         var defaultLabelStyle = EditorStyles.label.fontStyle;
@@ -47,7 +48,7 @@ public class MessagesDispatcherEditor : BaseBindingEditor
 
         var newSelectedIndex = EditorGUILayout.Popup(
             new GUIContent("Root message", "Type of the view model that this template will be bound to when it is instantiated."),
-            targetScript.SelectedIndex,
+            targetScript.UnityEditorSelectedMessageTypeIndex,
             availableMessages
                 .Select(viewModel => new GUIContent(viewModel))
                 .ToArray());
@@ -56,12 +57,12 @@ public class MessagesDispatcherEditor : BaseBindingEditor
         if (newSelectedIndex >= 0)
         {
             // Debug.Log(newSelectedIndex);
-            targetScript.SelectedMessage = ((Type)availableMessagesTypes[newSelectedIndex]).ToString();
+            targetScript.UnityEditorSelectedMessageName = ((Type)availableMessagesTypes[newSelectedIndex]).ToString();
         }
 
         // Don't let the user set anything else until they've chosen a view property.
         var guiPreviouslyEnabled = GUI.enabled;
-        if (targetScript.SelectedMessage == null)
+        if (targetScript.UnityEditorSelectedMessageName == null)
         {
             GUI.enabled = false;
         }
@@ -82,14 +83,14 @@ public class MessagesDispatcherEditor : BaseBindingEditor
 
         var bindableMethods = TypeResolver.FindBindableMethods(targetScript, (Type)availableMessagesTypes[newSelectedIndex]);
         InspectorUtils.DoPopup(
-                new GUIContent(targetScript.ViewModelMethodHandler),
+                new GUIContent(targetScript.UnityEditorViewModelMethodHandler),
                 new GUIContent("View-model method", ""),
                 m => m.ViewModelType + "/" + m.MemberName,
                 m => true,
-                m => m.ToString() == targetScript.ViewModelMethodHandler,
+                m => m.ToString() == targetScript.UnityEditorViewModelMethodHandler,
                 m => UpdateProperty(
-                    updatedValue => targetScript.ViewModelMethodHandler = updatedValue,
-                    targetScript.ViewModelMethodHandler,
+                    updatedValue => targetScript.UnityEditorViewModelMethodHandler = updatedValue,
+                    targetScript.UnityEditorViewModelMethodHandler,
                     m.ToString(),
                     "Set bound view-model method"
                 ),
@@ -103,6 +104,6 @@ public class MessagesDispatcherEditor : BaseBindingEditor
 
     private void setValueToTarget(string val)
     {
-        targetScript.ViewModelMethodHandler = val;
+        targetScript.UnityEditorViewModelMethodHandler = val;
     }
 }

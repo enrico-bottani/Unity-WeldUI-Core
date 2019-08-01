@@ -6,7 +6,8 @@ using System.Reflection;
 using UnityEngine;
 using UnityWeld.Binding.Exceptions;
 using UnityWeld.Ioc;
-using WeldUI.Common;
+using UnityWeld.Messaging;
+using UnityWeld.Messaging.Dispatcher;
 
 namespace UnityWeld.Binding.Internal
 {
