@@ -19,11 +19,21 @@ public class MessagesDispatcherEditor : BaseBindingEditor
         targetScript = (MessagesDispatcher)target;
     }
 
-    private bool propertyPrefabModified;
+    // Whether or not the values on our target match its prefab.
+    private bool viewMessagePrefabModified;
+    private bool viewModelMethodPrefabModified;
 
     // Start is called before the first frame update
     public override void OnInspectorGUI()
     {
+        
+        if (CannotModifyInPlayMode())
+        {
+            GUI.enabled = false;
+        }
+        
+        UpdatePrefabModifiedProperties();        
+        
         var availableMessagesTypes = TypeResolver.TypesWithMessageAttribute.OrderBy(message => message.ToString()).ToArray();
         var availableMessages = availableMessagesTypes.Select(type => type.ToString())
            .ToArray();
@@ -42,12 +52,12 @@ public class MessagesDispatcherEditor : BaseBindingEditor
         );
 
         var defaultLabelStyle = EditorStyles.label.fontStyle;
-        EditorStyles.label.fontStyle = propertyPrefabModified
+        EditorStyles.label.fontStyle = viewModelMethodPrefabModified
                ? FontStyle.Bold
                : defaultLabelStyle;
 
         var newSelectedIndex = EditorGUILayout.Popup(
-            new GUIContent("Root message", "Type of the view model that this template will be bound to when it is instantiated."),
+            new GUIContent("MessageType", "Type of the view model that this template will be bound to when it is instantiated."),
             targetScript.UnityEditorSelectedMessageTypeIndex,
             availableMessages
                 .Select(viewModel => new GUIContent(viewModel))
@@ -101,9 +111,30 @@ public class MessagesDispatcherEditor : BaseBindingEditor
             );
     }
 
-
-    private void setValueToTarget(string val)
+    /// <summary>
+    /// Check whether each of the properties on the object have been changed 
+    /// from the value in the prefab.
+    /// </summary>
+    private void UpdatePrefabModifiedProperties()
     {
-        targetScript.UnityEditorViewModelMethodHandler = val;
+        var property = serializedObject.GetIterator();
+        // Need to call Next(true) to get the first child. Once we have it, 
+        // Next(false) will iterate through the properties.
+        property.Next(true);
+        do
+        {
+            switch (property.name)
+            {
+                case "unityEditorSelectedMessageName":
+                    viewMessagePrefabModified = property.prefabOverride;
+                    break;
+
+                case "unityEditorViewModelMethodHandler":
+                    viewModelMethodPrefabModified = property.prefabOverride;
+                    break;
+            }
+        }
+        while (property.Next(false));
     }
+
 }
