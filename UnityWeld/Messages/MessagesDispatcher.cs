@@ -103,7 +103,7 @@ public class MessagesDispatcher : AbstractMemberBinding
 
     public override void Connect()
     {
-        string backup = ViewModelMethodHandler;
+        // Get the methodName and the viewModel object
         string methodName;
         object viewModel;
         ParseViewModelEndPointReference(ViewModelMethodHandler,
@@ -111,13 +111,15 @@ public class MessagesDispatcher : AbstractMemberBinding
                out viewModel
            );
 
-        var availableMessagesTypes = TypeResolver.TypesWithMessageAttribute.OrderBy(message=> message.ToString()).ToArray();
-     Type aimType = ((Type)availableMessagesTypes[_selectedIndex]);
-        
-        // get the method, given the name and the paramete
-        var viewModelMethod = viewModel.GetType().GetMethod(methodName, new Type[]{aimType });
-        
-        this.Add(aimType, msg => {viewModelMethod.Invoke(viewModel,new object[]{msg});});
+        // Recover all the Messages, like we did on the editor script to recover the type of message
+        var availableMessagesTypes = TypeResolver.TypesWithMessageAttribute.OrderBy(message => message.ToString()).ToArray();
+        Type messageType = (Type)availableMessagesTypes[_selectedIndex];
+
+        // Get the method to execute when the corrisponding messege is send, specified on the ViewModel
+        var messageCallback = viewModel.GetType().GetMethod(methodName, new Type[] { messageType });
+
+        // Add the callback to MessageDispatcher to handle it
+        Add(messageType, msg => { messageCallback.Invoke(viewModel, new object[] { msg }); });
     }
 
     public override void Disconnect()
