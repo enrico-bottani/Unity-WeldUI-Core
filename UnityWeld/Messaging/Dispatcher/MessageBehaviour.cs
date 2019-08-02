@@ -8,7 +8,7 @@ namespace UnityWeld.Messaging.Dispatcher
     public class MessageBehaviour<T> : AbstractMessageBehaviour
     {
     
-        public override void TryAction(BaseMessage msg)
+        public override void TryAction(object msg)
         {
             if (CanHandle(msg)) Action(Cast(msg));
         }
@@ -24,7 +24,7 @@ namespace UnityWeld.Messaging.Dispatcher
             get; set;
         }
 
-        public override bool CanHandle(BaseMessage msg)
+        public override bool CanHandle(object msg)
         {
             return Type == msg.GetType();
         }
@@ -35,7 +35,7 @@ namespace UnityWeld.Messaging.Dispatcher
             Type = typeof(T);
         }
 
-        private static T Cast(BaseMessage g1)
+        private static T Cast(object g1)
         {
             return (T)(object)g1;
         }

@@ -8,7 +8,7 @@ namespace UnityWeld.Messaging.Dispatcher
     public abstract class AbstractMessageBehaviour
     {
         public abstract Type Type { get; set; }
-        public abstract bool CanHandle(BaseMessage msg);
-        public abstract void TryAction(BaseMessage msg);
+        public abstract bool CanHandle(object msg);
+        public abstract void TryAction(object msg);
     }
 }

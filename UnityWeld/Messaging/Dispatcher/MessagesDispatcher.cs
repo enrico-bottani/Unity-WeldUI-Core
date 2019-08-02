@@ -26,6 +26,7 @@ namespace UnityWeld.Messaging.Dispatcher
             if (!handledMessages.ContainsKey(typeof(TMessage)))
             {
                 Messenger.Messenger.Register(handleMessage);
+                
                 handledMessages.Add(typeof(TMessage), new MessageBehaviour<TMessage>(handleMessage));
             }
         }
@@ -34,7 +35,7 @@ namespace UnityWeld.Messaging.Dispatcher
         {
             if (!handledMessages.ContainsKey(t))
             {
-                Messenger.Messenger.Register(t, (msg) => DispatchMessage((BaseMessage)msg));
+                Messenger.Messenger.Register(t, DispatchMessage);
                 handledMessages.Add(t, new MessageBehaviour<object>(handleMessage) { Type = t });
             }
         }
@@ -54,13 +55,13 @@ namespace UnityWeld.Messaging.Dispatcher
             handledMessages.Clear();
         }
 
-        public void DispatchMessage(BaseMessage msg)
+        public void DispatchMessage(object msg)
         {
             foreach (var msgHolder in handledMessages)
                 msgHolder.Value.TryAction(msg);
         }
 
-        public bool CanHandleMessage(BaseMessage msg)
+        public bool CanHandleMessage(object msg)
         {
             foreach (var msgHolder in handledMessages)
             {

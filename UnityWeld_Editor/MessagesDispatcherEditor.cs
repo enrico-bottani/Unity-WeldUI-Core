@@ -37,15 +37,7 @@ public class MessagesDispatcherEditor : BaseBindingEditor
         var availableMessagesTypes = TypeResolver.TypesWithMessageAttribute.OrderBy(message => message.ToString()).ToArray();
         var availableMessages = availableMessagesTypes.Select(type => type.ToString())
            .ToArray();
-
-        foreach (Type t in availableMessagesTypes)
-        {
-            if (!t.IsSubclassOf(typeof(BaseMessage)))
-            {
-                throw new InvalidCastException("Message " + t.ToString() + " must be subclass of " + nameof(BaseMessage));
-            }
-        }
-
+        
         targetScript.UnityEditorSelectedMessageTypeIndex = Array.IndexOf(
             availableMessages,
             targetScript.UnityEditorSelectedMessageName
@@ -66,30 +58,16 @@ public class MessagesDispatcherEditor : BaseBindingEditor
         EditorStyles.label.fontStyle = defaultLabelStyle;
         if (newSelectedIndex >= 0)
         {
-            // Debug.Log(newSelectedIndex);
             targetScript.UnityEditorSelectedMessageName = ((Type)availableMessagesTypes[newSelectedIndex]).ToString();
         }
-
+        
         // Don't let the user set anything else until they've chosen a view property.
         var guiPreviouslyEnabled = GUI.enabled;
-        if (targetScript.UnityEditorSelectedMessageName == null)
+        if (string.IsNullOrEmpty(targetScript.UnityEditorSelectedMessageName))
         {
             GUI.enabled = false;
+            return;
         }
-
-        //Debug.Log("TypeResolver:" + TypeResolver.FindBindableProperties(targetScript).Length);
-        /* ShowViewModelPropertyMenu(
-             new GUIContent(
-                 "View-model property",
-                 "Property on the view-model to bind to."
-             ),
-             TypeResolver.FindBindableProperties(targetScript),
-             value => { setValueToTarget(value); },
-            targetScript.ViewModelPropertyName,
-             property => property.PropertyType == (Type)availableMessagesTypes[selectedIndex]
-         );
-         */
-        //Debug.Log( "Found "+TypeResolver.FindBindableMethods(targetScript,(Type)availableMessagesTypes[newSelectedIndex]).Length+" methods available");
 
         var bindableMethods = TypeResolver.FindBindableMethods(targetScript, (Type)availableMessagesTypes[newSelectedIndex]);
         InspectorUtils.DoPopup(
