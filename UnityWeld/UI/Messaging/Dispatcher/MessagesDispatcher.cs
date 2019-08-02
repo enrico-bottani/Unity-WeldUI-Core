@@ -5,16 +5,21 @@ using UnityEngine;
 using UnityWeld.Binding;
 using UnityWeld.Binding.Internal;
 
-namespace UnityWeld.Messaging.Dispatcher
+namespace UnityWeld.UI.Messaging.Dispatcher
 {
     public class MessagesDispatcher : AbstractMemberBinding
     {
-        private void OnScriptsReloaded()
+        private MessagesStorageComponent MessagesStorageComponent => MessagesStorageComponent.Get(gameObject);
+
+        private void Start()
         {
-            handledMessages.Clear();
         }
 
-        private readonly Dictionary<Type, AbstractMessageBehaviour> handledMessages = new Dictionary<Type, AbstractMessageBehaviour>();
+        private void OnScriptsReloaded()
+        {
+            MessagesStorageComponent.handledMessages.Clear();
+        }
+
 
         /// <summary>
         /// Add a new MessageType to be handled
@@ -23,27 +28,26 @@ namespace UnityWeld.Messaging.Dispatcher
         /// <typeparam name="TMessage">Message Type to be handled</typeparam>
         internal void Add<TMessage>(Action<TMessage> handleMessage)
         {
-            if (!handledMessages.ContainsKey(typeof(TMessage)))
+            if (!MessagesStorageComponent.handledMessages.ContainsKey(typeof(TMessage)))
             {
                 Messenger.Messenger.Register(handleMessage);
-                
-                handledMessages.Add(typeof(TMessage), new MessageBehaviour<TMessage>(handleMessage));
+                MessagesStorageComponent.handledMessages.Add(typeof(TMessage), new MessageBehaviour<TMessage>(handleMessage));
             }
         }
 
         private void Add(Type t, Action<object> handleMessage)
         {
-            if (!handledMessages.ContainsKey(t))
+            if (!MessagesStorageComponent.handledMessages.ContainsKey(t))
             {
-                Messenger.Messenger.Register(t, DispatchMessage);
-                handledMessages.Add(t, new MessageBehaviour<object>(handleMessage) { Type = t });
+                Messenger.Messenger.Register(t, handleMessage);
+                MessagesStorageComponent.handledMessages.Add(t, new MessageBehaviour<object>(handleMessage) { Type = t });
             }
         }
 
         public HashSet<Type> GetAllHandledMessages()
         {
             var rtnSet = new HashSet<Type>();
-            foreach (var a in handledMessages)
+            foreach (var a in MessagesStorageComponent.handledMessages)
             {
                 rtnSet.Add(a.Key);
             }
@@ -52,30 +56,15 @@ namespace UnityWeld.Messaging.Dispatcher
 
         internal void Clear()
         {
-            handledMessages.Clear();
+            MessagesStorageComponent.handledMessages.Clear();
         }
 
-        public void DispatchMessage(object msg)
-        {
-            foreach (var msgHolder in handledMessages)
-                msgHolder.Value.TryAction(msg);
-        }
-
-        public bool CanHandleMessage(object msg)
-        {
-            foreach (var msgHolder in handledMessages)
-            {
-                if (msgHolder.Value.CanHandle(msg)) return true;
-            }
-            return false;
-        }
-
-        public int Count => handledMessages.Count;
+        // Page Navigation Only methods
 
 
+        public int Count => MessagesStorageComponent.handledMessages.Count;
 
         // Unity editor related code
-    
         [SerializeField] private string unityEditorSelectedMessageName;
 
         public string UnityEditorSelectedMessageName

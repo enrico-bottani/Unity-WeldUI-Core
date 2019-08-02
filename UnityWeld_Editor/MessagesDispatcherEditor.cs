@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEngine;
 
 using UnityWeld.Binding.Internal;
-using UnityWeld.Messaging.Dispatcher;
+using UnityWeld.UI.Messaging.Dispatcher;
 using UnityWeld_Editor;
 
 [CustomEditor(typeof(MessagesDispatcher))]

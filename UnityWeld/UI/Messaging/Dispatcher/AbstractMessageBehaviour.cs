@@ -1,6 +1,6 @@
 using System;
 
-namespace UnityWeld.Messaging.Dispatcher
+namespace UnityWeld.UI.Messaging.Dispatcher
 {
     /// <summary>
     /// Abstract Class to hold all the base information regarding a Message.
