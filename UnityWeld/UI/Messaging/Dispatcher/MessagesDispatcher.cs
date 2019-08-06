@@ -17,7 +17,7 @@ namespace UnityWeld.UI.Messaging.Dispatcher
 
         private void OnScriptsReloaded()
         {
-            MessagesStorageComponent.handledMessages.Clear();
+            //MessagesStorageComponent.handledMessages.Clear();
         }
 
 
@@ -110,7 +110,10 @@ namespace UnityWeld.UI.Messaging.Dispatcher
             // Add the callback to MessageDispatcher to handle it
             Add(messageType, msg =>
             {
-                if (messageCallback != null) messageCallback.Invoke(viewModel, new object[] {msg});
+                if (messageCallback != null)
+                {
+                    messageCallback.Invoke(viewModel, new object[] {msg});
+                }
                 else throw new Exception("Message Callback is null");
 
             });

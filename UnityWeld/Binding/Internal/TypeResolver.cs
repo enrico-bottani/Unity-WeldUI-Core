@@ -16,6 +16,7 @@ namespace UnityWeld.Binding.Internal
     public static class TypeResolver
     {
         private static Type[] typesWithBindingAttribute;
+        private static Type[] typesWithMessageAttribute;
 
         /// <summary>
         /// Find all types with the binding attribute. This uses reflection to find all
@@ -39,12 +40,12 @@ namespace UnityWeld.Binding.Internal
 
                 public static IEnumerable<object> TypesWithMessageAttribute {  get
             {
-                if (typesWithBindingAttribute == null)
+                if (typesWithMessageAttribute == null)
                 {
-                    typesWithBindingAttribute = FindTypesMarkedByAttribute(typeof(MessageAttribute));
+                    typesWithMessageAttribute = FindTypesMarkedByAttribute(typeof(MessageAttribute));
                 }
 
-                return typesWithBindingAttribute;
+                return typesWithMessageAttribute;
             }
         }
 

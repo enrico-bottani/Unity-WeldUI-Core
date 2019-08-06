@@ -2,18 +2,35 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityWeld.Binding;
+using UnityWeld.Binding.Exceptions;
 using UnityWeld.UI.Messaging.Dispatcher;
 using UnityWeld.UI.Messaging.Messenger;
 
 namespace UnityWeld.UI.Paging
 {
     [Binding]
-    public class BasePanelViewModel : BaseMonoBehaviourViewModel
+    public class NavigationPageViewModel : BaseMonoBehaviourViewModel
     {
         private string _name = string.Empty;
         private static Stack _backMessages = new Stack();
         private MessagesStorageComponent MessagesStorageComponent => MessagesStorageComponent.Get(gameObject);
-        
+
+        private Type baseMessage = typeof(GeneralPageNavigationMessage);
+        private Type BaseMessage
+        {
+            get { return baseMessage;}
+            set {
+                if (value.IsSubclassOf(typeof(GeneralPageNavigationMessage)))
+                {
+                    baseMessage = value;
+                }
+                else
+                {
+                    throw new InvalidTypeException(nameof(NavigationPageViewModel)+" requires a message type subclass of "+nameof(GeneralPageNavigationMessage));
+                }
+            }
+        }
+
         private void Start()
         {
             Initialize();
@@ -39,32 +56,34 @@ namespace UnityWeld.UI.Paging
 
         protected void Initialize()
         {
-            Messenger.Register<GeneralPageNavigationMessage>(GeneralUpdateMessage_Handler);
+            Messenger.Register(typeof(GeneralPageNavigationMessage), GeneralUpdateMessage_Handler);
             gameObject.SetActive(false);
         }
 
-        private void GeneralUpdateMessage_Handler(GeneralPageNavigationMessage msg)
+        private void GeneralUpdateMessage_Handler(object msg)
         {
-            Debug.Log(nameof(GeneralUpdateMessage_Handler)+"called. \n"+msg);
-            if (CanHandle(msg))
+            
+            var genPageNavMessage = (GeneralPageNavigationMessage) msg;
+            if (CanHandle(genPageNavMessage))
             {
-                if (!msg.IsBackMessage)
+                if (!genPageNavMessage.IsBackMessage)
                 {
-                    if (msg.GetType().IsSubclassOf(typeof(RootPageNavigationMessage)))
+                    if (genPageNavMessage.GetType().IsSubclassOf(typeof(RootPageNavigationMessage)))
                     {
                         _backMessages.Clear();
                     }
 
-                    _backMessages.Push(msg);
+                    _backMessages.Push(genPageNavMessage);
                 }
 
                 RaisePropertyChanged("IsBackAvailable");
                 gameObject.SetActive(true);
 
-                Handle(msg);
+    //            Handle(genPageNavMessage);
             }
             else
             {
+                Debug.Log("I can't handle");
                 gameObject.SetActive(false);
             }
         }

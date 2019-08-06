@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEngine;
 
 using UnityWeld.Binding.Internal;
+using UnityWeld.UI;
 using UnityWeld.UI.Messaging.Dispatcher;
 using UnityWeld_Editor;
 
@@ -14,6 +15,7 @@ using UnityWeld_Editor;
 public class MessagesDispatcherEditor : BaseBindingEditor
 {
     private MessagesDispatcher targetScript;
+
     private void OnEnable()
     {
         targetScript = (MessagesDispatcher)target;
@@ -47,7 +49,7 @@ public class MessagesDispatcherEditor : BaseBindingEditor
         EditorStyles.label.fontStyle = viewModelMethodPrefabModified
                ? FontStyle.Bold
                : defaultLabelStyle;
-
+        
         var newSelectedIndex = EditorGUILayout.Popup(
             new GUIContent("MessageType", "Type of the view model that this template will be bound to when it is instantiated."),
             targetScript.UnityEditorSelectedMessageTypeIndex,
@@ -58,7 +60,8 @@ public class MessagesDispatcherEditor : BaseBindingEditor
         EditorStyles.label.fontStyle = defaultLabelStyle;
         if (newSelectedIndex >= 0)
         {
-            targetScript.UnityEditorSelectedMessageName = ((Type)availableMessagesTypes[newSelectedIndex]).ToString();
+            var newSelectedType = (Type) availableMessagesTypes[newSelectedIndex];
+            targetScript.UnityEditorSelectedMessageName = newSelectedType.ToString();
         }
         
         // Don't let the user set anything else until they've chosen a view property.
@@ -69,6 +72,7 @@ public class MessagesDispatcherEditor : BaseBindingEditor
             return;
         }
 
+        
         var bindableMethods = TypeResolver.FindBindableMethods(targetScript, (Type)availableMessagesTypes[newSelectedIndex]);
         InspectorUtils.DoPopup(
                 new GUIContent(targetScript.UnityEditorViewModelMethodHandler),

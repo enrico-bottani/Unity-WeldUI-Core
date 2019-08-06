@@ -17,9 +17,7 @@ namespace UnityWeld.UI.Messaging.Dispatcher
 
             return gameObject.GetComponent<MessagesStorageComponent>();
         }
-        
 
-             
         public void Handle(GeneralPageNavigationMessage msg)
         {
             foreach (var msgHolder in handledMessages)

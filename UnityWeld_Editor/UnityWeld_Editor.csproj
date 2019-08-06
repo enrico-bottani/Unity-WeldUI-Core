@@ -28,4 +28,15 @@
         <HintPath>..\dll\UnityEngine.UI.dll</HintPath>
       </Reference>
     </ItemGroup>
+    <ItemGroup>
+      <None Remove="Resources\Foo" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Resources" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Update="Resources\dispatcher_logo.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
 </Project>

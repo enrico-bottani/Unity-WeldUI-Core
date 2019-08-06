@@ -1,10 +1,12 @@
 using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityWeld.Binding;
 using UnityWeld.Binding.Internal;
+using Component = UnityEngine.Component;
 
 namespace UnityWeld_Editor
 {
