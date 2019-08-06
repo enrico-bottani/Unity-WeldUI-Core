@@ -80,17 +80,21 @@ public class MessagesDispatcherEditor : BaseBindingEditor
                 m => m.ViewModelType + "/" + m.MemberName,
                 m => true,
                 m => m.ToString() == targetScript.UnityEditorViewModelMethodHandler,
-                m => UpdateProperty(
-                    updatedValue => targetScript.UnityEditorViewModelMethodHandler = updatedValue,
-                    targetScript.UnityEditorViewModelMethodHandler,
-                    m.ToString(),
-                    "Set bound view-model method"
-                ),
+                m =>
+                {
+                    UpdateProperty(
+                        updatedValue => targetScript.UnityEditorViewModelMethodHandler = updatedValue,
+                        targetScript.UnityEditorViewModelMethodHandler,
+                        m.ToString(),
+                        "Set bound view-model method"
+                    );
+                },
                 bindableMethods
                     .OrderBy(m => m.ViewModelTypeName)
                     .ThenBy(m => m.MemberName)
                     .ToArray()
             );
+        
     }
 
     /// <summary>

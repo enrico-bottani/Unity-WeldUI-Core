@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityWeld.Binding;
 using UnityWeld.Binding.Internal;
+using UnityWeld.UI.Paging;
 
 namespace UnityWeld.UI.Messaging.Dispatcher
 {
@@ -69,7 +70,7 @@ namespace UnityWeld.UI.Messaging.Dispatcher
 
         public string UnityEditorSelectedMessageName
         {
-            get { return unityEditorSelectedMessageName; }
+            get { return unityEditorSelectedMessageName; } 
             set { unityEditorSelectedMessageName = value; }
         }
 
@@ -78,7 +79,11 @@ namespace UnityWeld.UI.Messaging.Dispatcher
         public string UnityEditorViewModelMethodHandler
         {
             get { return unityEditorViewModelMethodName; }
-            set { unityEditorViewModelMethodName = value; }
+            set
+            {
+                GetComponent<NavigationPageViewModel>().UpdateMessagesUnderWatch();
+                unityEditorViewModelMethodName = value;
+            }
         }
 
         [SerializeField] private int unityEditorSelectedMessageTypeIndex;

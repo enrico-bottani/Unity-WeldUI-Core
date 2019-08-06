@@ -1,8 +1,12 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityWeld.Binding;
 using UnityWeld.Binding.Exceptions;
+using UnityWeld.Binding.Internal;
 using UnityWeld.UI.Messaging.Dispatcher;
 using UnityWeld.UI.Messaging.Messenger;
 
@@ -33,10 +37,21 @@ namespace UnityWeld.UI.Paging
 
         private void Start()
         {
-            Initialize();
+            if (Application.IsPlaying(gameObject))
+            {
+                // Play logic
+                Initialize();
+            }
         }
 
-        [Binding]
+        
+        public void Update()
+        {
+            if (!Application.IsPlaying(gameObject)){
+            }
+        }
+
+            [Binding]
         public string Name
         {
             get { return _name; }
@@ -83,7 +98,6 @@ namespace UnityWeld.UI.Paging
             }
             else
             {
-                Debug.Log("I can't handle");
                 gameObject.SetActive(false);
             }
         }
@@ -112,6 +126,27 @@ namespace UnityWeld.UI.Paging
         public void Close()
         {
             Messenger.Send(new GeneralPageNavigationMessage());
+        }
+        public List<string> messagesUnderWatch =new List<string>();
+
+        public void UpdateMessagesUnderWatch()
+        {
+            messagesUnderWatch.Clear();
+            // Getting al messages dispatcher
+            MessagesDispatcher[] list = GetComponents<MessagesDispatcher>();
+            foreach (var messagesDispatcherComponent in list)
+            {
+                // Choose the index chosen by unity editor
+                int chosenIndex =  messagesDispatcherComponent.UnityEditorSelectedMessageTypeIndex;
+                // Get all available Messages Types
+                var availableMessagesTypes = TypeResolver.TypesWithMessageAttribute.OrderBy(message => message.ToString()).ToArray();
+                // Optaining the type of the message
+                var type = (Type)availableMessagesTypes[chosenIndex];
+                // Checking if the type is a Subclass of GeneralUpdateMessage
+                if (type.IsSubclassOf(typeof(GeneralPageNavigationMessage)))
+                    // If yes, add it under the messagesUnderWatch
+                    messagesUnderWatch.Add(type.FullName);
+            }
         }
     }
 }
