@@ -12,15 +12,6 @@ namespace UnityWeld.UI.Messaging.Dispatcher
     {
         private MessagesStorageComponent MessagesStorageComponent => MessagesStorageComponent.Get(gameObject);
 
-        private void Start()
-        {
-        }
-
-        private void OnScriptsReloaded()
-        {
-            //MessagesStorageComponent.handledMessages.Clear();
-        }
-
 
         /// <summary>
         /// Add a new MessageType to be handled
@@ -36,6 +27,11 @@ namespace UnityWeld.UI.Messaging.Dispatcher
             }
         }
 
+        /// <summary>
+        /// Method used by Unity inspector to bind a new Message to ViewModel method
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="handleMessage"></param>
         private void Add(Type t, Action<object> handleMessage)
         {
             if (!MessagesStorageComponent.handledMessages.ContainsKey(t))
@@ -81,7 +77,6 @@ namespace UnityWeld.UI.Messaging.Dispatcher
             get { return unityEditorViewModelMethodName; }
             set
             {
-                GetComponent<NavigationPageViewModel>().UpdateMessagesUnderWatch();
                 unityEditorViewModelMethodName = value;
             }
         }
@@ -127,6 +122,7 @@ namespace UnityWeld.UI.Messaging.Dispatcher
         public override void Disconnect()
         {
         }
+        
     }
 }
 

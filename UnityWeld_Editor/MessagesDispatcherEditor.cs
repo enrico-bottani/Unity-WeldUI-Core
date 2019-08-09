@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityWeld.Binding.Internal;
 using UnityWeld.UI;
 using UnityWeld.UI.Messaging.Dispatcher;
+using UnityWeld.UI.Paging;
 using UnityWeld_Editor;
 
 [CustomEditor(typeof(MessagesDispatcher))]
@@ -20,10 +21,13 @@ public class MessagesDispatcherEditor : BaseBindingEditor
     {
         targetScript = (MessagesDispatcher)target;
     }
+    
 
     // Whether or not the values on our target match its prefab.
     private bool viewMessagePrefabModified;
     private bool viewModelMethodPrefabModified;
+
+    
 
     // Start is called before the first frame update
     public override void OnInspectorGUI()
@@ -83,7 +87,10 @@ public class MessagesDispatcherEditor : BaseBindingEditor
                 m =>
                 {
                     UpdateProperty(
-                        updatedValue => targetScript.UnityEditorViewModelMethodHandler = updatedValue,
+                        updatedValue =>
+                        {
+                            targetScript.UnityEditorViewModelMethodHandler = updatedValue;
+                        },
                         targetScript.UnityEditorViewModelMethodHandler,
                         m.ToString(),
                         "Set bound view-model method"
